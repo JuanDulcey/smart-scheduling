@@ -44,4 +44,18 @@ public interface SpecialistRepositoryPort {
      * @return Optional con el especialista actualizado si existía.
      */
     Optional<Specialist> update(Specialist specialist);
+
+
+    /**
+     * Busca un especialista y carga también su usuario asociado.
+     * @param id Identificador único del especialista.
+     * @return Optional con el especialista y su usuario si existe.
+     */
+    Optional<Specialist> findByIdWithUser(UUID id);
+
+    /**
+     * Obtiene todos los especialistas junto con sus usuarios.
+     * @return Lista de especialistas con datos de usuario.
+     */
+    List<Specialist> findAllWithUser();
 }

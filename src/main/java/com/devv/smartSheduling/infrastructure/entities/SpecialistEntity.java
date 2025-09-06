@@ -45,6 +45,11 @@ public class SpecialistEntity {
     @JoinColumn(name = "specialist_id")
     private Set<SpecialistPolicyEntity> specialistPolicies = new LinkedHashSet<>();
 
+    // 🔹 Relación con usuario (solo lectura)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private UserEntity user;
+
     public SpecialistEntity() {}
 
     public SpecialistEntity(UUID id, UUID userId, String name, String specialty, Boolean active, Instant createdAt) {
@@ -68,6 +73,14 @@ public class SpecialistEntity {
     }
 
     public Specialist toDomainModel() {
-        return new Specialist(id, userId, name, specialty, active, createdAt);
+        return new Specialist(
+                id,
+                userId,
+                user != null ? user.toDomainModel() : null,
+                name,
+                specialty,
+                active,
+                createdAt
+        );
     }
 }

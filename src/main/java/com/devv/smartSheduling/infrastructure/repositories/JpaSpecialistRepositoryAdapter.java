@@ -49,11 +49,28 @@ public class JpaSpecialistRepositoryAdapter implements SpecialistRepositoryPort 
 
     @Override
     public Optional<Specialist> update(Specialist specialist) {
-        if (jpaSpecialistRepository.existsById(specialist.getId())) {
-            SpecialistEntity specialistEntity = SpecialistEntity.fromDomainModel(specialist);
-            SpecialistEntity updateSpecialistEntity = jpaSpecialistRepository.save(specialistEntity);
-            return Optional.of(updateSpecialistEntity.toDomainModel());
-        }
-        return Optional.empty();
+        return jpaSpecialistRepository.findById(specialist.getId()).map(existing -> {
+            existing.setName(specialist.getName());
+            existing.setSpecialty(specialist.getSpecialty());
+            existing.setActive(specialist.isActive());
+
+            SpecialistEntity updated = jpaSpecialistRepository.save(existing);
+            return updated.toDomainModel();
+        });
+
+    }
+
+    @Override
+    public Optional<Specialist> findByIdWithUser(UUID id) {
+        return jpaSpecialistRepository.findById(id)
+                .map(SpecialistEntity::toDomainModel);
+    }
+
+    @Override
+    public List<Specialist> findAllWithUser() {
+        return jpaSpecialistRepository.findAll()
+                .stream()
+                .map(SpecialistEntity::toDomainModel)
+                .collect(Collectors.toList());
     }
 }

@@ -1,7 +1,6 @@
 package com.devv.smartSheduling.infrastructure.controllers;
 
 import com.devv.smartSheduling.application.services.SpecialistPolicyService;
-import com.devv.smartSheduling.domain.model.Specialist;
 import com.devv.smartSheduling.domain.model.SpecialistPolicy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+//@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("api/specialistPolicies")
 public class SpecialistPolicyController {

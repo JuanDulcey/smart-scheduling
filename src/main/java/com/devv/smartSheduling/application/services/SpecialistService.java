@@ -1,10 +1,7 @@
 package com.devv.smartSheduling.application.services;
 
 import com.devv.smartSheduling.domain.model.Specialist;
-import com.devv.smartSheduling.domain.ports.in.specialist.CreateSpecialistUseCase;
-import com.devv.smartSheduling.domain.ports.in.specialist.DeleteSpecialistUseCase;
-import com.devv.smartSheduling.domain.ports.in.specialist.RetrieveSpecialistUseCase;
-import com.devv.smartSheduling.domain.ports.in.specialist.UpdateSpecialistUseCase;
+import com.devv.smartSheduling.domain.ports.in.specialist.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,18 +11,21 @@ public class SpecialistService implements
         CreateSpecialistUseCase,
         DeleteSpecialistUseCase,
         RetrieveSpecialistUseCase,
-        UpdateSpecialistUseCase{
+        UpdateSpecialistUseCase,
+        RetrieveSpecialistWithUserUseCase {
 
     private final CreateSpecialistUseCase createSpecialistUseCase;
     private final RetrieveSpecialistUseCase retrieveSpecialistUseCase;
     private final UpdateSpecialistUseCase updateSpecialistUseCase;
     private final DeleteSpecialistUseCase deleteSpecialistUseCase;
+    private final RetrieveSpecialistWithUserUseCase retrieveSpecialistWithUserUseCase;
 
-    public SpecialistService(CreateSpecialistUseCase createSpecialistUseCase, RetrieveSpecialistUseCase retrieveSpecialistUseCase, UpdateSpecialistUseCase updateSpecialistUseCase, DeleteSpecialistUseCase deleteSpecialistUseCase) {
+    public SpecialistService(CreateSpecialistUseCase createSpecialistUseCase, RetrieveSpecialistUseCase retrieveSpecialistUseCase, UpdateSpecialistUseCase updateSpecialistUseCase, DeleteSpecialistUseCase deleteSpecialistUseCase, RetrieveSpecialistWithUserUseCase retrieveSpecialistWithUserUseCase) {
         this.createSpecialistUseCase = createSpecialistUseCase;
         this.retrieveSpecialistUseCase = retrieveSpecialistUseCase;
         this.updateSpecialistUseCase = updateSpecialistUseCase;
         this.deleteSpecialistUseCase = deleteSpecialistUseCase;
+        this.retrieveSpecialistWithUserUseCase = retrieveSpecialistWithUserUseCase;
     }
 
     @Override
@@ -51,5 +51,16 @@ public class SpecialistService implements
     @Override
     public Optional<Specialist> updateSpecialist(UUID id, Specialist updatedData) {
         return updateSpecialistUseCase.updateSpecialist(id, updatedData);
+    }
+
+
+    @Override
+    public Optional<Specialist> getSpecialistWithUser(UUID id) {
+        return retrieveSpecialistWithUserUseCase.getSpecialistWithUser(id);
+    }
+
+    @Override
+    public List<Specialist> getAllSpecialistsWithUser() {
+        return retrieveSpecialistWithUserUseCase.getAllSpecialistsWithUser();
     }
 }

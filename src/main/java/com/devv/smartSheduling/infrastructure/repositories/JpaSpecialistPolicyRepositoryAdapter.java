@@ -15,23 +15,34 @@ import java.util.stream.Collectors;
 public class JpaSpecialistPolicyRepositoryAdapter implements SpecialistPolicyRepositoryPort {
 
     private final JpaSpecialistPolicyRepository jpaSpecialistPolicyRepository;
+    private final JpaSpecialistRepository jpaSpecialistRepository;
 
-    public JpaSpecialistPolicyRepositoryAdapter(JpaSpecialistPolicyRepository jpaSpecialistPolicyRepository) {
+    public JpaSpecialistPolicyRepositoryAdapter(
+            JpaSpecialistPolicyRepository jpaSpecialistPolicyRepository,
+            JpaSpecialistRepository jpaSpecialistRepository
+    ) {
         this.jpaSpecialistPolicyRepository = jpaSpecialistPolicyRepository;
+        this.jpaSpecialistRepository = jpaSpecialistRepository;
     }
-
 
     @Override
     public SpecialistPolicy save(SpecialistPolicy specialistPolicy) {
-        SpecialistEntity specialistEntity = SpecialistEntity.fromDomainModel(specialistPolicy.getSpecialist());
+        if (specialistPolicy.getSpecialist() == null || specialistPolicy.getSpecialist().getId() == null) {
+            throw new IllegalArgumentException("Specialist must not be null and must contain a valid ID");
+        }
+
+        SpecialistEntity specialistEntity = jpaSpecialistRepository.findById(specialistPolicy.getSpecialist().getId())
+                .orElseThrow(() -> new RuntimeException("Specialist not found with ID: " + specialistPolicy.getSpecialist().getId()));
+
         SpecialistPolicyEntity specialistPolicyEntity = SpecialistPolicyEntity.fromDomainModel(specialistPolicy, specialistEntity);
-        SpecialistPolicyEntity saveSpecialistPolicyEntity = jpaSpecialistPolicyRepository.save(specialistPolicyEntity);
-        return saveSpecialistPolicyEntity.toDomainModel();
+        SpecialistPolicyEntity savedEntity = jpaSpecialistPolicyRepository.save(specialistPolicyEntity);
+        return savedEntity.toDomainModel();
     }
 
     @Override
     public Optional<SpecialistPolicy> findById(UUID id) {
-        return jpaSpecialistPolicyRepository.findById(id).map(SpecialistPolicyEntity::toDomainModel);
+        return jpaSpecialistPolicyRepository.findById(id)
+                .map(SpecialistPolicyEntity::toDomainModel);
     }
 
     @Override
@@ -53,10 +64,16 @@ public class JpaSpecialistPolicyRepositoryAdapter implements SpecialistPolicyRep
     @Override
     public Optional<SpecialistPolicy> update(SpecialistPolicy specialistPolicy) {
         if (jpaSpecialistPolicyRepository.existsById(specialistPolicy.getId())) {
-            SpecialistEntity specialistEntity = SpecialistEntity.fromDomainModel(specialistPolicy.getSpecialist());
+            if (specialistPolicy.getSpecialist() == null || specialistPolicy.getSpecialist().getId() == null) {
+                throw new IllegalArgumentException("Specialist must not be null and must contain a valid ID");
+            }
+
+            SpecialistEntity specialistEntity = jpaSpecialistRepository.findById(specialistPolicy.getSpecialist().getId())
+                    .orElseThrow(() -> new RuntimeException("Specialist not found with ID: " + specialistPolicy.getSpecialist().getId()));
+
             SpecialistPolicyEntity specialistPolicyEntity = SpecialistPolicyEntity.fromDomainModel(specialistPolicy, specialistEntity);
-            SpecialistPolicyEntity updatedSpecialistPolicyEntity = jpaSpecialistPolicyRepository.save(specialistPolicyEntity);
-            return Optional.of(updatedSpecialistPolicyEntity.toDomainModel());
+            SpecialistPolicyEntity updatedEntity = jpaSpecialistPolicyRepository.save(specialistPolicyEntity);
+            return Optional.of(updatedEntity.toDomainModel());
         }
         return Optional.empty();
     }

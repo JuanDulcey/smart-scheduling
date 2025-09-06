@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+//@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("api/specialists")
 public class SpecialistController {
@@ -55,6 +57,21 @@ public class SpecialistController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    // 🔹 NUEVOS ENDPOINTS CON USUARIO 🔹
+
+    @GetMapping("/{specialistId}/with-user")
+    public ResponseEntity<Specialist> getSpecialistByIdWithUser(@PathVariable UUID specialistId) {
+        Optional<Specialist> specialist = specialistService.getSpecialistWithUser(specialistId);
+        return specialist.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/with-user")
+    public ResponseEntity<List<Specialist>> getAllSpecialistsWithUser() {
+        List<Specialist> specialists = specialistService.getAllSpecialistsWithUser();
+        return new ResponseEntity<>(specialists, HttpStatus.OK);
     }
 }
 

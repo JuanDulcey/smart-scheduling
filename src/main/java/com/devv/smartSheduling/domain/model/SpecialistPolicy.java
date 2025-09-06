@@ -12,6 +12,8 @@ public class SpecialistPolicy {
     private Integer maxDaily;
     private Map<String, Object> rules;
 
+    public SpecialistPolicy() {}
+
     // Constructor completo
     public SpecialistPolicy(UUID id, Specialist specialist, Integer minDuration, Integer bufferTime, Integer maxDaily, Map<String, Object> rules) {
         this.id = id;
