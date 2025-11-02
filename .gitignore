@@ -1,5 +1,4 @@
 HELP.md
-.env
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -32,3 +31,36 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### === Archivos de entorno y configuración sensible ===
+.env
+*.env
+.env.*
+application-*.yml
+application-*.properties
+
+### === Docker ===
+docker-compose.yml
+.dockerignore
+*.log
+*.tmp
+*.bak
+
+### === Logs y archivos temporales ===
+*.log
+logs/
+spring.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+replay_pid*
+hs_err_pid*
+
+### === Sistema operativo ===
+.DS_Store
+Thumbs.db
+
+### === Git ===
+.gitignore
