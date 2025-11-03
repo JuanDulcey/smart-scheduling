@@ -1,47 +1,92 @@
+# ========================================================
+# CI Pipeline - Smart Scheduling (Java + Docker + Hurl)
+# ========================================================
+
 name: Smart Scheduling CI
 
 on:
   push:
     branches:
-      - "feature/*"
-      - qa
+      - "feature/docker-support"
   pull_request:
     branches:
       - qa
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
-    env:
-      DB_URL: ${{ secrets.DB_URL }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
-      SERVER_PORT: 8080
-
     steps:
-      - name: 🧭 Checkout del repositorio
-        uses: actions/checkout@v4
+    # -----------------------------
+    # 1. Clonar el repositorio
+    # -----------------------------
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: ☕ Configurar JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
+    # -----------------------------
+    # 2. Configurar JDK 21
+    # -----------------------------
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
 
-      - name: 🔧 Compilar con Maven
-        run: mvn -B clean package -DskipTests
+    # -----------------------------
+    # 3. Configurar variables de entorno
+    # -----------------------------
+    - name: Create .env file
+      run: |
+        echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+        echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+        echo "SERVER_PORT=8080" >> .env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+        echo "JWT_EXPIRATION=86400000" >> .env
 
-      - name: 🐳 Construir imagen Docker
-        run: docker build -t smart-scheduling .
+    # -----------------------------
+    # 4. Compilar con Maven
+    # -----------------------------
+    - name: Build with Maven
+      run: mvn -B clean package -DskipTests
 
-      - name: ✅ Verificar imagen construida
-        run: docker images | grep smart-scheduling
+    # -----------------------------
+    # 5. Construir imagen Docker
+    # -----------------------------
+    - name: Build Docker image
+      run: docker build -t smart-scheduling .
 
-      - name: 🧩 Probar conexión a Supabase
-        run: |
-          echo "Probing Supabase database connection..."
-          timeout 5 bash -c "</dev/tcp/db.supabase.co/5432" && echo "✅ Conexión exitosa" || echo "❌ Error al conectar"
+    # -----------------------------
+    # 6. Ejecutar tests de API con Hurl
+    # -----------------------------
+    - name: Run API tests for Resource entity
+      run: |
+        echo " Starting Smart Scheduling container for API tests..."
+        docker run -d --name smart-scheduling-test -p 8080:8080 --env-file .env smart-scheduling
+
+        echo " Waiting for the server to be ready..."
+        sleep 20
+
+        echo " Installing Hurl..."
+        curl -sSL https://github.com/Orange-OpenSource/hurl/releases/latest/download/hurl-x86_64-linux.tar.gz -o hurl.tar.gz
+        tar -xzf hurl.tar.gz
+        sudo mv hurl*/hurl /usr/local/bin/hurl
+        rm -rf hurl*
+
+        echo " Running Hurl test suite..."
+        hurl tests/resources/resource.hurl --test
+
+        echo " Cleaning up test environment..."
+        docker logs smart-scheduling-test > target/test-logs.txt || true
+        docker stop smart-scheduling-test
+        docker rm smart-scheduling-test
+
+    # -----------------------------
+    # 7. Guardar artefactos (logs)
+    # -----------------------------
+    - name: Upload test logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-test-logs
+        path: target/test-logs.txt
