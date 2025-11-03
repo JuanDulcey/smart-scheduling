@@ -34,7 +34,7 @@ jobs:
         cache: maven
 
     # -----------------------------
-    # 3. Configurar variables de entorno
+    # 3. Crear archivo .env desde secretos
     # -----------------------------
     - name: Create .env file
       run: |
@@ -46,7 +46,7 @@ jobs:
         echo "JWT_EXPIRATION=86400000" >> .env
 
     # -----------------------------
-    # 4. Compilar con Maven
+    # 4. Compilar proyecto con Maven
     # -----------------------------
     - name: Build with Maven
       run: mvn -B clean package -DskipTests
@@ -55,18 +55,28 @@ jobs:
     # 5. Construir imagen Docker
     # -----------------------------
     - name: Build Docker image
-      run: docker build -t smart-scheduling .
+      run: docker build -t smart-scheduling:latest .
 
     # -----------------------------
-    # 6. Ejecutar tests de API con Hurl
+    # 6. Ejecutar contenedor y pruebas Hurl
     # -----------------------------
     - name: Run API tests for Resource entity
       run: |
-        echo " Starting Smart Scheduling container for API tests..."
-        docker run -d --name smart-scheduling-test -p 8080:8080 --env-file .env smart-scheduling
+        echo "🚀 Starting Smart Scheduling container for API tests..."
+        docker run -d \
+          --name smart-scheduling-test \
+          --env-file .env \
+          -p 8080:8080 \
+          smart-scheduling:latest
 
-        echo " Waiting for the server to be ready..."
-        sleep 20
+        echo " Waiting for API to be ready..."
+        for i in {1..30}; do
+          if curl -s http://localhost:8080/actuator/health >/dev/null; then
+            echo " API is ready!"
+            break
+          fi
+          sleep 2
+        done
 
         echo " Installing Hurl..."
         curl -sSL https://github.com/Orange-OpenSource/hurl/releases/latest/download/hurl-x86_64-linux.tar.gz -o hurl.tar.gz
@@ -74,13 +84,13 @@ jobs:
         sudo mv hurl*/hurl /usr/local/bin/hurl
         rm -rf hurl*
 
-        echo " Running Hurl test suite..."
-        hurl tests/resources/resource.hurl --test
+        echo "🧪 Running Hurl test suite..."
+        hurl tests/resources/resource.hurl --test --error-format long --variable host=http://localhost:8080
 
-        echo " Cleaning up test environment..."
+        echo "🧹 Cleaning up test environment..."
         docker logs smart-scheduling-test > target/test-logs.txt || true
-        docker stop smart-scheduling-test
-        docker rm smart-scheduling-test
+        docker stop smart-scheduling-test || true
+        docker rm smart-scheduling-test || true
 
     # -----------------------------
     # 7. Guardar artefactos (logs)
