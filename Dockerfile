@@ -1,5 +1,5 @@
 # =========================
-# 🧱 Etapa 1: Construcción
+# Etapa 1: Construcción
 # =========================
 FROM maven:3.9.8-eclipse-temurin-21 AS build
 
@@ -17,7 +17,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # =========================
-# 🚀 Etapa 2: Ejecución
+# Etapa 2: Ejecución
 # =========================
 FROM eclipse-temurin:21-jdk
 
@@ -29,6 +29,10 @@ COPY --from=build /app/target/*.jar app.jar
 
 # Exponemos el puerto de la app
 EXPOSE 8080
+
+LABEL maintainer="Juan Esteban Dulcey Gómez"
+LABEL version="1.0"
+LABEL description="Backend Spring Boot para MS-Directory"
 
 # Comando para ejecutar la aplicación
 CMD ["java", "-jar", "app.jar"]
