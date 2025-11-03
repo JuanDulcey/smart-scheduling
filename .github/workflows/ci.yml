@@ -58,33 +58,32 @@ jobs:
       run: docker build -t smart-scheduling:latest .
 
     # -----------------------------
-    # 6. Ejecutar contenedor y pruebas Hurl
+    # 6. Ejecutar tests de API con Hurl
     # -----------------------------
     - name: Run API tests for Resource entity
       run: |
         echo "🚀 Starting Smart Scheduling container for API tests..."
         docker run -d \
-          --name smart-scheduling-test \
-          --env-file .env \
-          -p 8080:8080 \
-          smart-scheduling:latest
-
-        echo " Waiting for API to be ready..."
+        --name smart-scheduling-test \
+        --env-file .env \
+        -p 8080:8080 \
+        smart-scheduling:latest
+    
+        echo "⌛ Waiting for API to be ready..."
         for i in {1..30}; do
           if curl -s http://localhost:8080/actuator/health >/dev/null; then
-            echo " API is ready!"
+            echo "✅ API is ready!"
             break
-          fi
-          sleep 2
+        fi
+        sleep 2
         done
 
-        echo " Installing Hurl..."
-        curl -sSL https://github.com/Orange-OpenSource/hurl/releases/latest/download/hurl-x86_64-linux.tar.gz -o hurl.tar.gz
-        tar -xzf hurl.tar.gz
-        sudo mv hurl*/hurl /usr/local/bin/hurl
-        rm -rf hurl*
+    - name: Setup Hurl (API testing tool)
+      uses: gacts/install-hurl@v1
 
-        echo "🧪 Running Hurl test suite..."
+    - name: Run Hurl API tests
+      run: |
+        echo "🧪 Running Resource API tests..."
         hurl tests/resources/resource.hurl --test --error-format long --variable host=http://localhost:8080
 
         echo "🧹 Cleaning up test environment..."
@@ -92,6 +91,7 @@ jobs:
         docker stop smart-scheduling-test || true
         docker rm smart-scheduling-test || true
 
+  
     # -----------------------------
     # 7. Guardar artefactos (logs)
     # -----------------------------
