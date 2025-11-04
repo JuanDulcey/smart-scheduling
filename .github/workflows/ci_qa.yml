@@ -2,7 +2,7 @@
 # CI Pipeline - Smart Scheduling (Java + Docker + Hurl + OpenAPI)
 # ========================================================
 
-name: Smart Scheduling CI
+name: Smart Scheduling CI QA
 
 on:
   push:
