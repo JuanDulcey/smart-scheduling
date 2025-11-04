@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("test") //este es un entorno aislado de pruebas QA
+@ActiveProfiles("test") //entorno aisladoQA
 class SmartShedulingApplicationTests {
 
 	@Test
