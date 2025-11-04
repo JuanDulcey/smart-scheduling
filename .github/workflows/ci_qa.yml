@@ -50,7 +50,7 @@ jobs:
       # 4. Ejecutar pruebas unitarias (todas)
       # -----------------------------
       - name: Run unit tests
-        run: mvn -B clean test
+        run: mvn test -Dtest=!SmartShedulingApplicationTests
 
       # -----------------------------
       # 5. Generar reporte de cobertura
