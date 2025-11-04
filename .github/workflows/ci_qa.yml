@@ -1,5 +1,5 @@
 # ========================================================
-# CI Pipeline - Smart Scheduling (Java + Docker + Hurl + OpenAPI)
+# CI Pipeline - Smart Scheduling (QA Environment)
 # ========================================================
 
 name: Smart Scheduling CI QA
@@ -47,10 +47,10 @@ jobs:
           echo "JWT_EXPIRATION=86400000" >> .env
 
       # -----------------------------
-      # 4. Ejecutar pruebas unitarias
+      # 4. Ejecutar pruebas unitarias (todas)
       # -----------------------------
       - name: Run unit tests
-        run: mvn test
+        run: mvn -B clean test
 
       # -----------------------------
       # 5. Generar reporte de cobertura
@@ -71,10 +71,10 @@ jobs:
         run: mvn checkstyle:check || true
 
       # -----------------------------
-      # 7. Compilar proyecto sin tests
+      # 7. Compilar proyecto (sin tests)
       # -----------------------------
       - name: Build with Maven
-        run: mvn -B clean package -DskipTests
+        run: mvn -B package -DskipTests
 
       # -----------------------------
       # 8. Construir imagen Docker
@@ -104,7 +104,7 @@ jobs:
           done
 
       # -----------------------------
-      # 10. Validar y exportar OpenAPI spec
+      # 10. Exportar OpenAPI spec (springdoc)
       # -----------------------------
       - name: Export OpenAPI spec (springdoc)
         run: |
