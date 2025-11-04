@@ -39,6 +39,7 @@ jobs:
       # -----------------------------
       - name: Create .env file
         run: |
+          set -e
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
@@ -47,10 +48,10 @@ jobs:
           echo "JWT_EXPIRATION=86400000" >> .env
 
       # -----------------------------
-      # 4. Ejecutar pruebas unitarias (todas)
+      # 4. Ejecutar pruebas unitarias
       # -----------------------------
-      #- name: Run unit tests
-      #  run: mvn test -Dsurefire.failIfNoSpecifiedTests=false
+      - name: Run unit tests
+        run: mvn test -Dsurefire.failIfNoSpecifiedTests=false
 
       # -----------------------------
       # 5. Generar reporte de cobertura
@@ -74,7 +75,7 @@ jobs:
       # 7. Compilar proyecto (sin tests)
       # -----------------------------
       - name: Build with Maven
-        run: mvn -B package -DskipTests
+        run: mvn -B verify -DskipTests
 
       # -----------------------------
       # 8. Construir imagen Docker
@@ -88,14 +89,14 @@ jobs:
       - name: Start container for API tests
         run: |
           echo "🚀 Starting Smart Scheduling container..."
-          docker run -d \
+          docker run -d --rm \
             --name smart-scheduling-test \
             --env-file .env \
             -p 8080:8080 \
             smart-scheduling:latest
           
           echo "⌛ Waiting for API to be ready..."
-          for i in {1..30}; do
+          for i in {1..45}; do
             if curl -s http://localhost:8080/actuator/health >/dev/null; then
               echo "✅ API is ready!"
               break
