@@ -7,42 +7,50 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Puerto de salida para la persistencia de políticas de especialistas.
+ * Output port for Specialist Policy persistence.
+ * <p>
+ * Defines the operations that any repository implementation
+ * must provide to interact with the {@link SpecialistPolicy} domain entity.
+ * </p>
  */
-
 public interface SpecialistPolicyRepositoryPort {
 
     /**
-     * Guarda o actualiza una política de especialista.
-     * @param specialistPolicy Entidad a persistir.
-     * @return Entidad persistida.
+     * Save or update a specialist policy.
+     *
+     * @param specialistPolicy the entity to save
+     * @return the saved entity
      */
     SpecialistPolicy save(SpecialistPolicy specialistPolicy);
 
     /**
-     * Busca una política por su ID.
-     * @param id Identificador único.
-     * @return Optional con la política si existe.
+     * Find a policy by its unique ID.
+     *
+     * @param id the unique identifier
+     * @return an {@link Optional} with the policy if found, or empty if not
      */
     Optional<SpecialistPolicy> findById(UUID id);
 
     /**
-     * Obtiene todas las políticas.
-     * @return Lista completa.
+     * Get all specialist policies.
+     *
+     * @return list of all policies
      */
     List<SpecialistPolicy> findAll();
 
     /**
-     * Elimina una política por ID.
-     * @param id Identificador único.
-     * @return true si se eliminó, false si no existía.
+     * Delete a policy by its unique ID.
+     *
+     * @param id the unique identifier
+     * @return {@code true} if deleted, {@code false} if not found
      */
     boolean deleteById(UUID id);
 
     /**
-     * Actualiza una política existente.
-     * @param specialistPolicy Entidad con datos actualizados.
-     * @return Optional con la política actualizada si existía.
+     * Update an existing specialist policy.
+     *
+     * @param specialistPolicy the entity with updated data
+     * @return an {@link Optional} with the updated policy if found, or empty if not
      */
     Optional<SpecialistPolicy> update(SpecialistPolicy specialistPolicy);
 }

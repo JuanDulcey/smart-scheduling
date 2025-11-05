@@ -1,34 +1,59 @@
-HELP.md
-.env
+# === Compilación y dependencias ===
 target/
+build/
+dist/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-### STS ###
+# === IDEs ===
+.idea/
+*.iws
+*.iml
+*.ipr
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
 .vscode/
+.nb-gradle/
+nbproject/private/
+nbbuild/
+nbdist/
+
+# === Archivos sensibles y configuración ===
+.env
+*.env
+.env.*
+application-*.yml
+application-*.properties
+
+# === Docker ===
+*.log
+*.tmp
+*.bak
+docker-compose.override.yml
+Dockerfile
+
+# === Logs y temporales ===
+logs/
+spring.log
+*.swp
+*.swo
+*.orig
+replay_pid*
+hs_err_pid*
+
+# === Sistema operativo ===
+.DS_Store
+Thumbs.db
+.Trash-*
+.nfs*
+
+# === Git ===
+.gitignore

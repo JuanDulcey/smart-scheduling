@@ -1,0 +1,102 @@
+# ========================================================
+# CI Pipeline - Smart Scheduling (Java + Docker + Hurl)
+# ========================================================
+
+name: Smart Scheduling CI
+
+on:
+  push:
+    branches:
+      - "feature/docker-support"
+  pull_request:
+    branches:
+      - qa
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # -----------------------------
+    # 1. Clonar el repositorio
+    # -----------------------------
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # -----------------------------
+    # 2. Configurar JDK 21
+    # -----------------------------
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+
+    # -----------------------------
+    # 3. Crear archivo .env desde secretos
+    # -----------------------------
+    - name: Create .env file
+      run: |
+        echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+        echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+        echo "SERVER_PORT=8080" >> .env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+        echo "JWT_EXPIRATION=86400000" >> .env
+
+    # -----------------------------
+    # 4. Compilar proyecto con Maven
+    # -----------------------------
+    - name: Build with Maven
+      run: mvn -B clean package -DskipTests
+
+    # -----------------------------
+    # 5. Construir imagen Docker
+    # -----------------------------
+    - name: Build Docker image
+      run: docker build -t smart-scheduling:latest .
+
+    # -----------------------------
+    # 6. Ejecutar tests de API con Hurl
+    # -----------------------------
+    - name: Run API tests for Resource entity
+      run: |
+        echo "🚀 Starting Smart Scheduling container for API tests..."
+        docker run -d \
+        --name smart-scheduling-test \
+        --env-file .env \
+        -p 8080:8080 \
+        smart-scheduling:latest
+    
+        echo "⌛ Waiting for API to be ready..."
+        for i in {1..30}; do
+          if curl -s http://localhost:8080/actuator/health >/dev/null; then
+            echo "✅ API is ready!"
+            break
+        fi
+        sleep 2
+        done
+
+    - name: Setup Hurl (API testing tool)
+      uses: gacts/install-hurl@v1
+
+    - name: Run Hurl API tests
+      run: |
+        echo "🧪 Running Resource API tests..."
+        hurl tests/resources/resource.hurl --test --error-format long --variable host=http://localhost:8080
+
+        echo "🧹 Cleaning up test environment..."
+        docker logs smart-scheduling-test > target/test-logs.txt || true
+        docker stop smart-scheduling-test || true
+        docker rm smart-scheduling-test || true
+
+  
+    # -----------------------------
+    # 7. Guardar artefactos (logs)
+    # -----------------------------
+    - name: Upload test logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-test-logs
+        path: target/test-logs.txt

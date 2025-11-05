@@ -1,0 +1,21 @@
+# Carpetas de compilación
+target/
+
+# Archivos y carpetas del IDE
+.idea/
+*.iml
+
+# Git y configuración local
+.git/
+.gitignore
+
+# Archivos sensibles
+.env
+
+# Documentación y archivos no necesarios en el contenedor
+README.md
+
+# Archivos de sistema y temporales
+*.log
+*.tmp
+.DS_Store

@@ -7,55 +7,55 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Puerto de salida para la persistencia de recursos.
+ * Output port for resource persistence.
  * <p>
- * Define las operaciones que cualquier implementación de repositorio
- * (por ejemplo, basada en JPA, JDBC, o cualquier otra tecnología de almacenamiento)
- * debe cumplir para interactuar con la entidad de dominio {@link Resource}.
+ * Defines the operations that any repository implementation
+ * (for example, JPA, JDBC, or another storage technology)
+ * must provide to interact with the {@link Resource} domain entity.
+ * </p>
  */
-
 public interface ResourceRepositoryPort {
+
     /**
-     * Persiste un recurso en el almacenamiento.
+     * Save a resource into the storage.
      * <p>
-     * Si el recurso ya existe (por ID), se actualiza; si no existe, se inserta.
+     * If the resource already exists (by ID), it is updated.
+     * If not, a new one is created.
+     * </p>
      *
-     * @param resource recurso de dominio a persistir.
-     * @return el recurso persistido con posibles valores actualizados (ej: ID autogenerado).
+     * @param resource the domain resource to save
+     * @return the saved resource with possible updated values (e.g., generated ID)
      */
     Resource save(Resource resource);
 
     /**
-     * Busca un recurso por su identificador único.
+     * Find a resource by its unique ID.
      *
-     * @param id identificador único del recurso.
-     * @return un {@link Optional} que contiene el recurso si se encuentra,
-     * o vacío en caso contrario.
+     * @param id the unique identifier of the resource
+     * @return an {@link Optional} with the resource if found, or empty if not
      */
     Optional<Resource> findById(UUID id);
 
     /**
-     * Obtiene todos los recursos almacenados.
+     * Get all resources stored in the system.
      *
-     * @return lista completa de recursos.
+     * @return list of all resources
      */
     List<Resource> findAll();
 
     /**
-     * Elimina un recurso según su identificador único.
+     * Delete a resource by its unique ID.
      *
-     * @param id identificador único del recurso.
-     * @return {@code true} si el recurso existía y fue eliminado,
-     * {@code false} si no se encontró.
+     * @param id the unique identifier of the resource
+     * @return {@code true} if the resource existed and was deleted, {@code false} otherwise
      */
     boolean deleteById(UUID id);
 
     /**
-     * Actualiza los datos de un recurso existente.
+     * Update an existing resource.
      *
-     * @param resource recurso de dominio con los datos actualizados.
-     * @return un {@link Optional} que contiene el recurso actualizado si existía,
-     * o vacío en caso contrario.
+     * @param resource the resource with updated information
+     * @return an {@link Optional} with the updated resource if found, or empty if not
      */
     Optional<Resource> update(Resource resource);
 }

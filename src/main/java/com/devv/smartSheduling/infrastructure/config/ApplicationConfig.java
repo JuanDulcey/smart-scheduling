@@ -11,7 +11,7 @@ import com.devv.smartSheduling.application.usecases.resource.UpdateResourceUseCa
 import com.devv.smartSheduling.application.usecases.specialist.*;
 import com.devv.smartSheduling.application.usecases.specialistpolicy.CreateSpecialistPolicyUseCaseImpl;
 import com.devv.smartSheduling.application.usecases.specialistpolicy.DeleteSpecialistPolicyUseCaseImpl;
-import com.devv.smartSheduling.application.usecases.specialistpolicy.RetriveSpecialistPolicyUseCaseImpl;
+import com.devv.smartSheduling.application.usecases.specialistpolicy.RetrieveSpecialistPolicyUseCaseImpl;
 import com.devv.smartSheduling.application.usecases.specialistpolicy.UpdateSpecialistPolicyUseCaseImpl;
 import com.devv.smartSheduling.application.usecases.user.CreateUserUseCaseImpl;
 import com.devv.smartSheduling.application.usecases.user.DeleteUserUseCaseImpl;
@@ -31,6 +31,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfig {
 
+    /**
+     * User service bean.
+     * <p>
+     * Provides operations to create, read, update, and delete users.
+     * </p>
+     *
+     * @param userRepositoryPort the user repository
+     * @return a UserService instance
+     */
     @Bean
     public UserService userService(UserRepositoryPort userRepositoryPort) {
         return new UserService(
@@ -41,26 +50,63 @@ public class ApplicationConfig {
         );
     }
 
+    /**
+     * User repository bean.
+     * <p>
+     * Provides access to user data persistence operations.
+     * </p>
+     *
+     * @param userRepositoryAdapter the JPA user adapter
+     * @return a UserRepositoryPort instance
+     */
     @Bean
     public UserRepositoryPort userRepositoryPort(JpaUserRepositoryAdapter userRepositoryAdapter) {
         return userRepositoryAdapter;
     }
 
+    /**
+     * Specialist policy service bean.
+     * <p>
+     * Provides operations to create, read, update, and delete specialist policies.
+     * </p>
+     *
+     * @param specialistPolicyRepositoryPort the specialist policy repository
+     * @return a SpecialistPolicyService instance
+     */
     @Bean
     public SpecialistPolicyService  specialistPolicyService(SpecialistPolicyRepositoryPort specialistPolicyRepositoryPort) {
         return new SpecialistPolicyService(
                 new CreateSpecialistPolicyUseCaseImpl(specialistPolicyRepositoryPort),
                 new DeleteSpecialistPolicyUseCaseImpl(specialistPolicyRepositoryPort),
-                new RetriveSpecialistPolicyUseCaseImpl(specialistPolicyRepositoryPort),
+                new RetrieveSpecialistPolicyUseCaseImpl(specialistPolicyRepositoryPort),
                 new UpdateSpecialistPolicyUseCaseImpl(specialistPolicyRepositoryPort)
         );
     }
 
+    /**
+     * Specialist policy repository bean.
+     * <p>
+     * Provides access to specialist policy persistence operations.
+     * </p>
+     *
+     * @param specialistPolicyRepositoryAdapter the JPA policy adapter
+     * @return a SpecialistPolicyRepositoryPort instance
+     */
     @Bean
     public SpecialistPolicyRepositoryPort specialistPolicyRepositoryPort(JpaSpecialistPolicyRepositoryAdapter  specialistPolicyRepositoryAdapter) {
         return specialistPolicyRepositoryAdapter;
     }
 
+    /**
+     * Specialist service bean.
+     * <p>
+     * Provides operations to create, read, update, delete specialists,
+     * and get specialists with their user data.
+     * </p>
+     *
+     * @param specialistRepositoryPort the specialist repository
+     * @return a SpecialistService instance
+     */
     @Bean
     public SpecialistService specialistService(SpecialistRepositoryPort specialistRepositoryPort) {
         return new SpecialistService(
@@ -72,11 +118,29 @@ public class ApplicationConfig {
         );
     }
 
+    /**
+     * Specialist repository bean.
+     * <p>
+     * Provides access to specialist persistence operations.
+     * </p>
+     *
+     * @param jpaSpecialistRepositoryAdapter the JPA specialist adapter
+     * @return a SpecialistRepositoryPort instance
+     */
     @Bean
     public SpecialistRepositoryPort specialistRepositoryPort(JpaSpecialistRepositoryAdapter jpaSpecialistRepositoryAdapter) {
         return jpaSpecialistRepositoryAdapter;
     }
 
+    /**
+     * Resource service bean.
+     * <p>
+     * Provides operations to create, read, update, and delete resources.
+     * </p>
+     *
+     * @param resourceRepositoryPort the resource repository
+     * @return a ResourceService instance
+     */
     @Bean
     public ResourceService resourceService(ResourceRepositoryPort resourceRepositoryPort) {
         return new ResourceService(
@@ -87,6 +151,15 @@ public class ApplicationConfig {
         );
     }
 
+    /**
+     * Resource repository bean.
+     * <p>
+     * Provides access to resource persistence operations.
+     * </p>
+     *
+     * @param jpaResourceRepositoryAdapter the JPA resource adapter
+     * @return a ResourceRepositoryPort instance
+     */
     @Bean
     public ResourceRepositoryPort resourceRepositoryPort(JpaResourceRepositoryAdapter jpaResourceRepositoryAdapter) {
         return jpaResourceRepositoryAdapter;
