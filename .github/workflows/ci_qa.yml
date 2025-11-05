@@ -7,7 +7,7 @@ name: Smart Scheduling CI QA con SpringDOC pruebas manuales
 on:
   push:
     branches:
-      - "feature/docker-support"
+      - qa
   pull_request:
     branches:
       - qa
