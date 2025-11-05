@@ -76,9 +76,9 @@ jobs:
             tests/resources/resource.hurl
           sparse-checkout-cone-mode: false
 
-        # -----------------------------
-        # 3. Crear archivo .env desde secretos
-        # -----------------------------
+      # -----------------------------
+      # Crear archivo .env desde secretos
+      # -----------------------------
       - name: Create .env file
         run: |
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
@@ -88,14 +88,29 @@ jobs:
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "JWT_EXPIRATION=86400000" >> .env
 
-      - name: Levantar contenedor local para pruebas
+      # -----------------------------
+      # Login en Azure Container Registry
+      # -----------------------------
+      - name: Docker login to ACR
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ secrets.ACR_NAME }}.azurecr.io -u ${{ secrets.ACR_NAME }} --password-stdin
+
+      # -----------------------------
+      # Descargar imagen desde ACR
+      # -----------------------------
+      - name: Pull image from ACR
+        run: docker pull ${{ env.IMAGE_URL }}
+
+      # -----------------------------
+      # Levantar contenedor local para pruebas
+      # -----------------------------
+      - name: Run container from ACR image
         run: |
           echo "Iniciando contenedor Smart Scheduling..."
           docker run -d \
             --name smart-scheduling-test \
             --env-file .env \
             -p 8080:8080 \
-            smart-scheduling:latest
+            ${{ env.IMAGE_URL }}
 
           echo "Esperando a que la API esté lista..."
           for i in {1..30}; do
