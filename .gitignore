@@ -38,6 +38,7 @@ application-*.properties
 *.tmp
 *.bak
 docker-compose.override.yml
+Dockerfile
 
 # === Logs y temporales ===
 logs/
