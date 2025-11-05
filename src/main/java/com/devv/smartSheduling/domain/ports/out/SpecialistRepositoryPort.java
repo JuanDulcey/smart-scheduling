@@ -7,55 +7,66 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Puerto de salida para operaciones de persistencia de especialistas.
+ * Output port for Specialist persistence operations.
+ * <p>
+ * Defines the operations that any repository implementation
+ * must provide to interact with the {@link Specialist} domain entity.
+ * </p>
  */
 public interface SpecialistRepositoryPort {
 
     /**
-     * Guarda o actualiza un especialista.
-     * @param specialist Entidad a persistir.
-     * @return Entidad persistida.
+     * Save or update a specialist.
+     *
+     * @param specialist the entity to save
+     * @return the saved entity
      */
     Specialist save(Specialist specialist);
 
     /**
-     * Busca un especialista por su ID.
-     * @param id Identificador único.
-     * @return Optional con el especialista si existe.
+     * Find a specialist by its unique ID.
+     *
+     * @param id the unique identifier
+     * @return an {@link Optional} with the specialist if found, or empty if not
      */
     Optional<Specialist> findById(UUID id);
 
     /**
-     * Obtiene todos los especialistas.
-     * @return Lista completa.
+     * Get all specialists.
+     *
+     * @return list of all specialists
      */
     List<Specialist> findAll();
 
     /**
-     * Elimina un especialista por ID.
-     * @param id Identificador único.
-     * @return true si se eliminó, false si no existía.
+     * Delete a specialist by its unique ID.
+     *
+     * @param id the unique identifier
+     * @return {@code true} if deleted, {@code false} if not found
      */
     boolean deleteById(UUID id);
 
     /**
-     * Actualiza un especialista existente.
-     * @param specialist Entidad con datos actualizados.
-     * @return Optional con el especialista actualizado si existía.
+     * Update an existing specialist.
+     *
+     * @param specialist the entity with updated data
+     * @return an {@link Optional} with the updated specialist if found, or empty if not
      */
     Optional<Specialist> update(Specialist specialist);
 
 
     /**
-     * Busca un especialista y carga también su usuario asociado.
-     * @param id Identificador único del especialista.
-     * @return Optional con el especialista y su usuario si existe.
+     * Find a specialist and load its associated user.
+     *
+     * @param id the specialist unique ID
+     * @return an {@link Optional} with the specialist and its user if found, or empty if not
      */
     Optional<Specialist> findByIdWithUser(UUID id);
 
     /**
-     * Obtiene todos los especialistas junto con sus usuarios.
-     * @return Lista de especialistas con datos de usuario.
+     * Get all specialists including their associated users.
+     *
+     * @return list of specialists with their user data
      */
     List<Specialist> findAllWithUser();
 }
