@@ -7,7 +7,7 @@ on:
       IMAGE_REPOSITORY:
         description: 'Repository of the image (debe coincidir con el App Service)'
         required: true
-        default: 'api-smartScheduling'
+        default: 'smartschedulingjava'
       IMAGE_TAG:
         description: 'Tag de la imagen (ej. latest, v1.0.0)'
         required: true
