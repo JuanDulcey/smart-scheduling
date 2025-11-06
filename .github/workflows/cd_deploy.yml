@@ -1,6 +1,5 @@
 name: Azure Continuous Delivery
 
-# Activación manual del workflow desde GitHub Actions
 on:
   workflow_dispatch:
     inputs:
@@ -15,12 +14,11 @@ on:
       AZURE_WEBAPP_NAME:
         description: 'Nombre del App Service en Azure'
         required: true
-      PORT:
-        description: 'Puerto de la aplicación en Azure'
-        required: true
-        default: '8080'
+      # PORT:  # ← ELIMINA ESTE INPUT - no es necesario
+      #   description: 'Puerto de la aplicación en Azure'
+      #   required: true
+      #   default: '8080'
 
-# URL completa de la imagen en Azure Container Registry
 env:
   IMAGE_URL: ${{ secrets.ACR_NAME }}.azurecr.io/${{ github.event.inputs.IMAGE_REPOSITORY }}:${{ github.event.inputs.IMAGE_TAG }}
 
@@ -84,7 +82,7 @@ jobs:
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "SERVER_PORT=8080" >> .env
+          echo "PORT=8080" >> .env  # ← CAMBIA SERVER_PORT por PORT
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "JWT_EXPIRATION=86400000" >> .env
 
