@@ -18,7 +18,7 @@ on:
       PORT:
         description: 'Puerto de la aplicación en Azure'
         required: true
-        default: '443'
+        default: '8080'
 
 # URL completa de la imagen en Azure Container Registry
 env:
